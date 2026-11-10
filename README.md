@@ -37,7 +37,7 @@ The approach:
 - **Networking:** TP-Link Omada
 
 ### Home Lab
-- Synology NAS
+- VMware Workstation 17
 - Linux virtual machines
 - Self-hosted infrastructure experiments
 
@@ -123,7 +123,7 @@ A chronological record of progress, experiments, and milestones.
 | Date | Progress |
 |---|---|
 | 2026-11-03 | Analyzed 10 remote DevOps vacancies and created the repository. |
-
+| 2026-11-10 | Deployed lab01 (Ubuntu Server) in VMware Workstation 17. Set up SSH key authentication and an SSH config entry. |
 ---
 
 ## 💡 Philosophy
