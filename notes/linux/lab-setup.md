@@ -5,6 +5,10 @@
 - CPU 2 core / RAM 4 GB/ disk 32 GB/ network Bridge;
 - sudo apt update && sudo apt upgrade -y;
 
+## Utilities
+- дополнительно установил nano, htop, curl и git
+`sudo apt install nano htop curl git -y`
+
 ## SSH keys
 - создал ключ PSh: `ssh-keygen -t ed25519`;
 - создал на Linux привило для профиля: 
@@ -31,6 +35,7 @@ Host lab01
   Применить: `sudo systemctl restart ssh`
   вход только по ключу и запрет входа под root;
 - Проверка с Windows: `ssh -o PubkeyAuthentication=no lab01` → должно быть `Permission denied (publickey)`
+
 ## Updates, timezone
 - `timedatectl set-timezone Asia/Tashkent`;
 ## Snapshots
