@@ -1,12 +1,13 @@
 # lab01 setup
 
 ## VM
-- VMware Workstation 17, Ubuntu Server 
+- VMware Workstation 17, Ubuntu Server;
 - CPU 2 core / RAM 4 GB/ disk 32 GB/ network Bridge;
+- sudo apt update && sudo apt upgrade -y;
 
 ## SSH keys
-- создал ключ;
-- закинул ключ на ВМ с Windows: Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub;
+- создал ключ: sh-keygen -t ed25519;
+- закинул ключ на ВМ с Windows: Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub -> sudo nano ~/.ssh/authorized_keys;
 - ssh config на Windows: 
 Host lab01
     HostName x.x.x.x
@@ -16,10 +17,15 @@ Host lab01
 
 ## SSH hardening
 - sudo nano /etc/ssh/sshd_config.d/00-hardening.conf
+  ```
   PasswordAuthentication no
   PermitRootLogin no
+  ```
+  ctrl-o, ctrl-x
+  ```
+  Применить: `sudo systemctl restart ssh`
   вход только по ключу и запрет входа под root;
-
+- Проверка с Windows: `ssh -o PubkeyAuthentication=no lab01` → должно быть `Permission denied (publickey)`
 ## Updates, timezone
 - timedatectl set-timezone Asia/Tashkent;
 ## Snapshots
