@@ -27,6 +27,7 @@
 
 ```console
 deploy ALL=(root) NOPASSWD: /usr/bin/apt update
+```
 
 ### Problems adn fixes
 
