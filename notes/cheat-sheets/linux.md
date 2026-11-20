@@ -46,3 +46,42 @@ deploy ALL=(root) NOPASSWD: /usr/bin/apt update
 - мой терминал: `tty`; в колонке `TTY`:`pts/N` - ssh-сессия, `?` - без терминала (службы);
 - завершить процесс: `sudo kill <PID>` - сигнал TERM, вежливая просьба выйти;
 - живой монитор: `htop` - hot keys → `F5` дерево, `Shift+M` по памяти, `Shift+H` потоки, `q` выход;
+
+### Services (systemd)
+- состояние службы: `systemctl status nginx`;
+- что сейчас работает: `systemctl list-units --type=service --state=running`;
+- остановить / запустить / перезапустить: `sudo systemctl stop nginx, start, restart`;
+- автозапуск при запуске: `sudo systemctl enable heartbeat`;
+- показать юнит-файл: `systemctl cat heartbeat`;
+- перечитать юнит-файлы после правки: `sudo systemctl daemon-reload`;
+- журнал службы: `journalctl -u heartbeat -n 20` - последние 20 строк, `-f` - следить вживую;
+- перезагрузить сервер: `sudo reboot`;
+
+### My serice: heartbeat
+- скрипт `/usr/local/bin/heartbeat.sh`, права `sudo chmod 755 /usr/local/bin/heartbeat.sh`
+
+```console
+#!/bin/bash
+while true; do echo "hello world"; sleep 60; done
+```
+- юнит `/etc/systemd/system/heartbeat.service`:
+```console
+[Unit]
+Description=Hello World Cycle
+
+[Service]
+ExecStart=/usr/local/bin/heartbeat.sh
+
+[Install]
+WantedBy=multi-user.target
+```
+- запуск: `sudo systemctl daemon-reload`→`sudo systemctl enable heartbeat`→`sudo systemctl start heratbeat`;
+
+### Problems and Fixes
+- поправил `.service`→`daemon-relaod`, потом `restart`; поправил скрипт → только: `restart heartbeat.service`; если забыл - systemctl напомнит `change on disk`;
+- `enabled` / `disabled` - автозапуск, `active` / `inactive` - работает ли сейчас: два разных переключателя;
+- запуск по пути (`usr/local/bin/heartbeat.sh) требует права `x` даже у root, для `bash` хватает `r`;
+- `kill` шлёт сигнал процессу по PID, а службой управляет `systemctl`;
+- проверить статус службы, которую менял;
+- в `htop` память смотреть в `RES`, а не в `VIRT`; зеленые строки - потоки, их память не складывать;
+- `%CPU` в `ps` - среднее за жизнь процесса, в `htop` - прямо сейчас;
