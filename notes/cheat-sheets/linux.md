@@ -119,30 +119,57 @@ WantedBy=multi-user.target
 - отказ сразу - на порту никто не слушает, долго думает - пакеты режет файрвол;
 - TTL в `ping` - сколько маршрутизаторов пакет ещё пройдёт, TTL в `dig` - сколько секунд ответ можно держать в кэше;
 
+## Day 5 - Packages & Disks
+### Packages: apt
+- обновить списки пакетов: `sudo apt update` - `Hit` не изменилось, `Get` скачал новое;
+- что можно обновить: `apt list --upgradable`;
+- обновить: `sudo apt upgrade` - сначала прочитать сводку, потом `Y`;
+- карточка пакета: `apt show nginx`, выход из просмотра - `q`;
+- какая версия стоит и какая доступна: `apt policy nginx` - `Installed` и `Candidate`;
+- откуда apt берет пакеты: `cat /etc/apt/sources.list.d/ubuntu/sources`;
 
+### Space, Disks, Memory
+- место на всех файловых системах: `df -h`, в одной: `df -h /data`;
+- что сколько занимает: `sudo du  -h -d 1 -x`;
+- файлы в папке с размерами: `ls -lh /`;
+- диски, разделы и тома деревом: lsblk;
+- пул LVM и свободное место в нем: `sudo vgs` - колонка `VFree`;
+- память и подкачка: `free -h` - смотреть на `available`;
 
+### Search and Configs
+- найти слово во всех файлах папки, с номерами строк: `grep -rn listen /etc/nginx/`;
+- открыть файл сразу на нужной строке: `sudo nano +22 (файл)`;
+- проверить конфиг nginx: `sudo nginx -t`;
+- сообщения ядра с этой загрузки: `journalctl -k -b`;
+- искать сразу несколько слов: `journalctl -k -b | grep -i -e "memory": -e crashkernel`;
 
+### New Disk → /data
+1. найти диск: `lsblk` → новый `sdb` без разделов;
+2. разместить: `sudo fdisk /dev/sdb` → `g` (таблица GPT), `n` (раздел, три раза Enter), `p`(проверить), `w` (записать);
+3. файловая система: `sudo mkfs.ext4 /dev/sbd1` → записать `Filesystem UUID`;
+4. подключить руками: `sudo mkdir /data` → `sudo mount /dev/sdb1/data` → `df -h /data`;
+5. навсегда: `sudo nano /etc/fstab`, в конец строка:
+   ```console
+   UUID=<UUID> /data ext4 defaults 0 2
+   ```
+6. проверить до перезагрузки: `sudo findmnt --verify` → `sudo systemctl daemon-reaload` → `sudo mount -a`;
+7. перезагрузить: `sudo reboot` → `df -h /data`, `systemctl status data.mount`;
+- отключить: `sudo unmount /data` (если внутри `/data` - `target is busy`);
 
+### fstab: 6 fields
+```console
+<что подключать>    <куда>    <тип>  <параметры>  <dump>  <pass>
+UUID=<UUID>          /data    ext4    defaults      0      2
+```
+- `pass`: 1 - только корень, 2 - остальные, 0 - не проверять;
+- UUID, а не `/путь`: имена `sdX` могут съехать, если добавить диск;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### Problems and Fixes
+- сначала `nginx -t`, потом `restart`. `-t` проверяет синтаксис, а не смысл: результат смотреть в `ss`;
+- `apt policy` и `apt list --upgradable` не ходят в интернет: сначала `sudo apt update`;
+- `Not upgading yet due to phasing` - обновление раскрывают волнами, просто "подождать" когда дойдёт очередь;
+- `du -d 1` показывает только папки: если сумма не сходится с итогом, искать большой файл через `ls -lh`;
+- `mount` поверх непустой папки прячет её файлы до `umount`, но не удаляет;
+- в fstab - UUID своей файловой системы: чужой UUID подключит не тот раздел;
+- после правки fstab - `daemon-reload`: systemd делает из строк fstab юниты .mount;
+- корень 15ГБ из 32: установщик отдал корню половину пула LVM, остальное свободно (`sudo vgs`);
