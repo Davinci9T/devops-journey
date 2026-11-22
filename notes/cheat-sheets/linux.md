@@ -149,6 +149,7 @@ WantedBy=multi-user.target
 3. файловая система: `sudo mkfs.ext4 /dev/sbd1` → записать `Filesystem UUID`;
 4. подключить руками: `sudo mkdir /data` → `sudo mount /dev/sdb1/data` → `df -h /data`;
 5. навсегда: `sudo nano /etc/fstab`, в конец строка:
+
    ```console
    UUID=<UUID> /data ext4 defaults 0 2
    ```
@@ -157,6 +158,7 @@ WantedBy=multi-user.target
 - отключить: `sudo unmount /data` (если внутри `/data` - `target is busy`);
 
 ### fstab: 6 fields
+
 ```console
 <что подключать>    <куда>    <тип>  <параметры>  <dump>  <pass>
 UUID=<UUID>          /data    ext4    defaults      0      2
@@ -173,3 +175,13 @@ UUID=<UUID>          /data    ext4    defaults      0      2
 - в fstab - UUID своей файловой системы: чужой UUID подключит не тот раздел;
 - после правки fstab - `daemon-reload`: systemd делает из строк fstab юниты .mount;
 - корень 15ГБ из 32: установщик отдал корню половину пула LVM, остальное свободно (`sudo vgs`);
+
+## LVM, аварийная загрузка, журнал (неделя 2, выходные)
+
+| Задача | Команда |
+|---|---|
+| Сколько свободно в пуле LVM | `sudo vgs` (колонка `VFree`) |
+| Добавить корню 5 ГБ вместе с файловой системой | `sudo lvextend -r -L +5G /dev/ubuntu-vg/ubuntu-lv` |
+| Диски и разделы с типом ФС и UUID | `lsblk -f` |
+| Только ошибки журнала текущей загрузки | `journalctl -xb -p err --no-pager` |
+| Журнал службы за отрезок времени | `journalctl -u ssh -S '2026-11-23 01:00' -U '2026-11-23 01:30'` |
