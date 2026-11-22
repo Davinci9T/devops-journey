@@ -75,10 +75,10 @@ ExecStart=/usr/local/bin/heartbeat.sh
 [Install]
 WantedBy=multi-user.target
 ```
-- запуск: `sudo systemctl daemon-reload`→`sudo systemctl enable heartbeat`→`sudo systemctl start heratbeat`;
+- запуск: `sudo systemctl daemon-reload`→`sudo systemctl enable heartbeat`→`sudo systemctl start heartbeat`;
 
 ### Problems and Fixes
-- поправил `.service`→`daemon-relaod`, потом `restart`; поправил скрипт → только: `restart heartbeat.service`; если забыл - systemctl напомнит `change on disk`;
+- поправил `.service`→`daemon-reload`, потом `restart`; поправил скрипт → только: `restart heartbeat.service`; если забыл - systemctl напомнит `change on disk`;
 - `enabled` / `disabled` - автозапуск, `active` / `inactive` - работает ли сейчас: два разных переключателя;
 - запуск по пути (`usr/local/bin/heartbeat.sh) требует права `x` даже у root, для `bash` хватает `r`;
 - `kill` шлёт сигнал процессу по PID, а службой управляет `systemctl`;
@@ -126,11 +126,11 @@ WantedBy=multi-user.target
 - обновить: `sudo apt upgrade` - сначала прочитать сводку, потом `Y`;
 - карточка пакета: `apt show nginx`, выход из просмотра - `q`;
 - какая версия стоит и какая доступна: `apt policy nginx` - `Installed` и `Candidate`;
-- откуда apt берет пакеты: `cat /etc/apt/sources.list.d/ubuntu/sources`;
+- откуда apt берет пакеты: `cat /etc/apt/sources.list.d/ubuntu.sources`;
 
 ### Space, Disks, Memory
 - место на всех файловых системах: `df -h`, в одной: `df -h /data`;
-- что сколько занимает: `sudo du  -h -d 1 -x`;
+- что сколько занимает: `sudo du  -h -d 1 -x /`;
 - файлы в папке с размерами: `ls -lh /`;
 - диски, разделы и тома деревом: lsblk;
 - пул LVM и свободное место в нем: `sudo vgs` - колонка `VFree`;
@@ -146,16 +146,16 @@ WantedBy=multi-user.target
 ### New Disk → /data
 1. найти диск: `lsblk` → новый `sdb` без разделов;
 2. разместить: `sudo fdisk /dev/sdb` → `g` (таблица GPT), `n` (раздел, три раза Enter), `p`(проверить), `w` (записать);
-3. файловая система: `sudo mkfs.ext4 /dev/sbd1` → записать `Filesystem UUID`;
-4. подключить руками: `sudo mkdir /data` → `sudo mount /dev/sdb1/data` → `df -h /data`;
+3. файловая система: `sudo mkfs.ext4 /dev/sdb1` → записать `Filesystem UUID`;
+4. подключить руками: `sudo mkdir /data` → `sudo mount /dev/sdb1 /data` → `df -h /data`;
 5. навсегда: `sudo nano /etc/fstab`, в конец строка:
 
    ```console
    UUID=<UUID> /data ext4 defaults 0 2
    ```
-6. проверить до перезагрузки: `sudo findmnt --verify` → `sudo systemctl daemon-reaload` → `sudo mount -a`;
+6. проверить до перезагрузки: `sudo findmnt --verify` → `sudo systemctl daemon-reload` → `sudo mount -a`;
 7. перезагрузить: `sudo reboot` → `df -h /data`, `systemctl status data.mount`;
-- отключить: `sudo unmount /data` (если внутри `/data` - `target is busy`);
+- отключить: `sudo umount /data` (если внутри `/data` - `target is busy`);
 
 ### fstab: 6 fields
 
