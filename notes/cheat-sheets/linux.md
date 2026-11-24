@@ -2,6 +2,43 @@
 
 Неделя 2 - «жить в консоли». Формат: задача → команда → пометка.
 
+## Day 1 - Files & Search
+
+### Files and folders
+- что лежит в папке: `ls /var/log`;
+- подробно: `ls -l /var/log` → первая буква: `d` папка, `l` ссылка, `-` файл;
+- `->` в `ls -l` показывает, куда ведёт ссылка; `..` в пути - папка уровнем выше;
+- цвета в `ls`: синий - папка, голубой - ссылка, зелёный - можно запустить, красный - архив (`.gz`);
+- показать короткий файл целиком: `cat файл`;
+- читать длинный файл: `less /var/log/apt/history.log` → `/htop` + Enter поиск, `n` следующее совпадение, `q` выход;
+- найти файлы во всех подпапках: `sudo find /var/log -name "*.log"` - звёздочку в кавычки, чтобы её обработал `find`, а не оболочка;
+
+### Search: grep
+- строки со словом: `grep Commandline /var/log/apt/history.log`;
+- фраза с пробелами - в кавычках: `grep "Commandline: apt " /var/log/apt/history.log` - пробел после `apt` отсекает `apt-get`;
+- плюс строка перед каждой найденной: `grep -B1 "Commandline: apt " /var/log/apt/history.log` → сверху `Start-Date`, `--` разделяет куски;
+- строки, где слова НЕТ: `grep -v unattended` (как `findstr /v`);
+
+### Pipes
+- `|` передаёт вывод одной команды на вход другой;
+- посчитать строки: `grep Commandline /var/log/apt/history.log | wc -l`;
+- цепочка, только ручные команды apt: `grep Commandline /var/log/apt/history.log | grep -v "Commandline: /usr/bin/unattended" | wc -l`;
+
+### Journal: journalctl
+- список загрузок: `journalctl --list-boots` - `0` текущая, `-1` прошлая;
+- журнал службы: `journalctl -u ssh -n 20` - последние 20 строк;
+- текущая загрузка: `journalctl -b`, прошлая: `-b -1`, любая из списка: `journalctl -b -7 -n 15`;
+- следить вживую: `journalctl -u ssh -f`, выход - `Ctrl+C`;
+- кто входил по ssh: `journalctl -u ssh | grep Accepted`;
+
+### Problems and Fixes
+- широкий шаблон ловит лишнее: `grep -v unattended` выкинул и строку установщика с пакетом `unattended-upgrades` (96 вместо 97) → делать шаблон точнее;
+- `wc -l` считает строки, а не совпадения: слово два раза в одной строке - это 1;
+- перезагрузки надёжнее искать в `--list-boots`: по упавшим номерам процессов видно не каждую;
+- без `-b` журнал идёт одной лентой за все загрузки, список загрузок - только `--list-boots`;
+- `sudo` для `journalctl` не нужен: someuser в группе `adm`;
+- застрял: в `less` - `q`, в `-f` - `Ctrl+C`;
+
 ## Day 2 - users & permissions
 
 ### Users and groups
