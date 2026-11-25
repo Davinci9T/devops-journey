@@ -224,3 +224,28 @@ UUID=<UUID>          /data    ext4    defaults      0      2
 | Журнал службы за отрезок времени | `journalctl -u ssh -S '2026-11-23 01:00' -U '2026-11-23 01:30'` |
 
 ## nginx, delele allow 22/tcp, forgot pass (неделя 2, выходные #Part2)
+
+| Задача | Команда |
+|---|---|
+| Найти PID главного процесса nginx | `ps -f -C nginx` (мастер от root) |
+| Убить процесс без разговоров | `sudo kill -9 <PID>` (PID брать свежий) |
+| Список сигналов с номерами | `kill -l` (9 KILL, 15 TERM, 6 ABRT) |
+| Всё из журнала за минуту, от всех служб и ядра | `journalctl -S 22:50 -U 22:51` (если указано только время — значит сегодня) |
+| Служба сама поднимается после падения | `sudo systemctl edit nginx` → вверху две строки: `[Service]` и `Restart=on-failure` |
+| Юнит вместе с добавками | `systemctl cat nginx` (внизу `override.conf`) |
+| Правила ufw с номерами | `sudo ufw status numbered` |
+| Удалить правило сразу для IPv4 и IPv6 | `sudo ufw delete allow 22/tcp` (по тексту, не по номеру) |
+| Пакеты на порт 22, которые отбросил ufw | `journalctl -k -S 23:00 \| grep "DPT=22 "` |
+| Попасть в меню GRUB | зажать Shift при загрузке (BIOS), на UEFI — Esc |
+| Войти в root без пароля | `e` на пункте Ubuntu → в конец строки `linux` через пробел `init=/bin/bash` → Ctrl+X |
+| Как подключён корень | `findmnt /` (в OPTIONS `ro` или `rw`) |
+| Подключить корень на запись | `mount -o remount,rw /` |
+| Сбросить пароль | `passwd someuser` |
+| Записать на диск и загрузиться дальше | `sync` → `exec /sbin/init` |
+
+### Problems and Fixes
+- кто убил службу: окно журнала читать целиком, без `grep` по имени жертвы. Улика — строка sudo (`COMMAND=`) или ядра (`Out of memory: Killed process`);
+- `kill -9` → `failed (Result: signal)`, `systemctl stop` → `inactive (dead)`. `Restart=on-failure` поднимает только после аварии;
+- файлы в `/usr/lib/systemd/system/` затирает `apt upgrade`, свои правки — только через `systemctl edit` (они ложатся в `/etc`);
+- ufw stateful: старое ssh-окно живёт, проверять новым входом. `timed out` — пакет молча выброшен, `refused` — на порту никого;
+- в `init=/bin/bash` ошибка `Authentication token manipulation error` значит, что корень `ro`. `exit` там нельзя — паника ядра.
