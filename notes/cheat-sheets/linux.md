@@ -222,3 +222,5 @@ UUID=<UUID>          /data    ext4    defaults      0      2
 | Диски и разделы с типом ФС и UUID | `lsblk -f` |
 | Только ошибки журнала текущей загрузки | `journalctl -xb -p err --no-pager` |
 | Журнал службы за отрезок времени | `journalctl -u ssh -S '2026-11-23 01:00' -U '2026-11-23 01:30'` |
+
+## nginx, delele allow 22/tcp, forgot pass (неделя 2, выходные #Part2)
