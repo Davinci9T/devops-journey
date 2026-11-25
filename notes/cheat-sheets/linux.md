@@ -66,7 +66,7 @@
 deploy ALL=(root) NOPASSWD: /usr/bin/apt update
 ```
 
-### Problems adn fixes
+### Problems and fixes
 
 - `Permission denied` → смотреть права в `ls -l`; `Operation not permitted` → это может только владелец или root;
 - новый файл принадлежит тому, кто его создал: через `sudo` это root;
@@ -94,7 +94,7 @@ deploy ALL=(root) NOPASSWD: /usr/bin/apt update
 - журнал службы: `journalctl -u heartbeat -n 20` - последние 20 строк, `-f` - следить вживую;
 - перезагрузить сервер: `sudo reboot`;
 
-### My serice: heartbeat
+### My service: heartbeat
 - скрипт `/usr/local/bin/heartbeat.sh`, права `sudo chmod 755 /usr/local/bin/heartbeat.sh`
 
 ```console
@@ -117,7 +117,7 @@ WantedBy=multi-user.target
 ### Problems and Fixes
 - поправил `.service`→`daemon-reload`, потом `restart`; поправил скрипт → только: `restart heartbeat.service`; если забыл - systemctl напомнит `change on disk`;
 - `enabled` / `disabled` - автозапуск, `active` / `inactive` - работает ли сейчас: два разных переключателя;
-- запуск по пути (`usr/local/bin/heartbeat.sh) требует права `x` даже у root, для `bash` хватает `r`;
+- запуск по пути (`usr/local/bin/heartbeat.sh`) требует права `x` даже у root, для `bash` хватает `r`;
 - `kill` шлёт сигнал процессу по PID, а службой управляет `systemctl`;
 - проверить статус службы, которую менял;
 - в `htop` память смотреть в `RES`, а не в `VIRT`; зеленые строки - потоки, их память не складывать;
@@ -136,7 +136,7 @@ WantedBy=multi-user.target
 - кто слушает порты: `sudo ss -tulpn` → `t` TCP, `u` UDP, `l` слушающие, `p` процесс, `n` номера цифрами;
 - `127.0.0.1` и `[::1]` - только с самого сервера, `0.0.0.0` и `[::]` - со всех адресов;
 - проверить веб-сервер на самом сервере: `curl localhost`;
-- проверить порт с Windows: `Test-NetConnection x.x.x.x -Port 80`→`TcpSucceeded: True`;
+- проверить порт с Windows: `Test-NetConnection x.x.x.x -Port 80`→`TcpTestSucceeded: True`;
 
 ### nginx
 - поставить: `sudo apt install nginx`;
@@ -151,7 +151,7 @@ WantedBy=multi-user.target
 
 ### Problems and Fixes
 - служба на `127.0.0.1` снаружи недоступна, даже если порт открыт в ufw. Нужны две двери: служба слушает не только на петле, и файрвол пропускает;
-- «слушает» видно в `ss` на сервере, «доступен» - только снаружи (Test-NetConnetction);
+- «слушает» видно в `ss` на сервере, «доступен» - только снаружи (Test-NetConnection);
 - `ping` ходит без портов: пинг есть, а порт может быть закрыт;
 - отказ сразу - на порту никто не слушает, долго думает - пакеты режет файрвол;
 - TTL в `ping` - сколько маршрутизаторов пакет ещё пройдёт, TTL в `dig` - сколько секунд ответ можно держать в кэше;
@@ -178,7 +178,7 @@ WantedBy=multi-user.target
 - открыть файл сразу на нужной строке: `sudo nano +22 (файл)`;
 - проверить конфиг nginx: `sudo nginx -t`;
 - сообщения ядра с этой загрузки: `journalctl -k -b`;
-- искать сразу несколько слов: `journalctl -k -b | grep -i -e "memory": -e crashkernel`;
+- искать сразу несколько слов: `journalctl -k -b | grep -i -e "memory:" -e crashkernel`;
 
 ### New Disk → /data
 1. найти диск: `lsblk` → новый `sdb` без разделов;
@@ -206,7 +206,7 @@ UUID=<UUID>          /data    ext4    defaults      0      2
 ### Problems and Fixes
 - сначала `nginx -t`, потом `restart`. `-t` проверяет синтаксис, а не смысл: результат смотреть в `ss`;
 - `apt policy` и `apt list --upgradable` не ходят в интернет: сначала `sudo apt update`;
-- `Not upgading yet due to phasing` - обновление раскрывают волнами, просто "подождать" когда дойдёт очередь;
+- `Not upgrading yet due to phasing` - обновление раскрывают волнами, просто "подождать" когда дойдёт очередь;
 - `du -d 1` показывает только папки: если сумма не сходится с итогом, искать большой файл через `ls -lh`;
 - `mount` поверх непустой папки прячет её файлы до `umount`, но не удаляет;
 - в fstab - UUID своей файловой системы: чужой UUID подключит не тот раздел;
