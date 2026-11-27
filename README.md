@@ -84,8 +84,8 @@ The most frequently requested skills and technologies:
 
 ### Weekly Checklist
 
-- [ ] **Week 1:** Set up a Linux lab VM, configure SSH keys, create GitHub repository.
-- [ ] **Week 2:** Learn Linux fundamentals and create a personal cheat sheet.
+- [x] **Week 1:** Set up a Linux lab VM, configure SSH keys, create GitHub repository.
+- [x] **Week 2:** Learn Linux fundamentals and create a personal cheat sheet.
 - [ ] **Week 3:** Write 3 Bash automation scripts and configure cron jobs.
 - [ ] **Week 4:** Rebuild the lab from documentation and deploy Docker Hello World.
 
@@ -119,11 +119,16 @@ devops-journey/
 ## 📓 Learning Log
 
 A chronological record of progress, experiments, and milestones.
+[cheat sheet](notes/cheat-sheets/linux.md)
 
 | Date | Progress |
 |---|---|
 | 2026-11-03 | Analyzed 10 remote DevOps vacancies and created the repository. |
 | 2026-11-10 | Deployed lab01 (Ubuntu Server) in VMware Workstation 17. Set up SSH key authentication and an SSH config entry. |
+| 2026-11-11 – 2026-11-19 | Week 2: Practiced basic Linux commands and file permissions. Created a `heartbeat` service with systemd and mounted a second disk at `/data`. Started a [cheat sheet](notes/cheat-sheets/linux.md). |
+| 2026-11-20 – 2026-11-23 | Break & fix, part 1: Extended the root volume with LVM when the disk was full. Fixed a broken fstab entry (emergency mode) and wrong `.ssh` permissions. |
+| 2026-11-24 – 2026-11-26 | Break & fix, part 2: Set nginx to restart after a crash, traced an SSH timeout to UFW, and reset a password using GRUB. |
+| 2026-11-27 | Investigated why sudo rejected the password over SSH. Used the apt history to find who installed the new kernel. Read the nginx package scripts to see how nginx was upgraded. |
 ---
 
 ## 💡 Philosophy
